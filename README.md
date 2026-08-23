@@ -156,7 +156,7 @@ OPENAI_API_KEY="your-openai-api-key"
 
 Run the complete End-to-End Integration test suite:
 ```bash
-python tests/test_e2e.py
+pytest -q
 ```
 
 Run individual unit test modules:
