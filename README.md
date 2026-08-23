@@ -148,7 +148,7 @@ Edit `.env` to add your optional API keys:
 GEMINI_API_KEY="your-gemini-api-key"
 OPENAI_API_KEY="your-openai-api-key"
 ```
-*(Note: If no API keys are provided, Compass AI automatically switches to its built-in offline heuristic parser and vectorizer fallback).*
+*(Note: If no API keys are provided, Compass AI uses its built-in offline fallbacks where supported, including a deterministic hash-based embedding vectorizer and heuristic profile extraction.).*
 
 ---
 
