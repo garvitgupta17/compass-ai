@@ -2,6 +2,7 @@
 Compass AI - Recommendation Explanation Generator
 Generates clear, transparent natural language explanations for recommended resources
 answering: Why this resource?, Why now?, and How it fits user constraints.
+Supports Google Gemini API (gemini-3.6-flash) as primary provider.
 """
 import os
 
@@ -26,6 +27,7 @@ Structure the explanation clearly answering:
 3. How it perfectly aligns with their budget, format, and language preferences.
 """
 
+
 def generate_recommendation_explanation(
     skill_name: str,
     priority_category: str,
@@ -33,10 +35,11 @@ def generate_recommendation_explanation(
     resource: ResourceDocument,
     profile: UserProfile,
     gap_item: SkillGapItem | None = None
-) -> str:
+) -> tuple[str, str]:
     """
-    Generates a grounded natural language explanation using Gemini / OpenAI API,
-    or a deterministic template fallback when offline.
+    Generates a grounded natural language explanation using Google Gemini API (gemini-3.6-flash)
+    or a deterministic template fallback when offline or unconfigured.
+    Returns: Tuple of (explanation_text, provider_label)
     """
     user_level = gap_item.user_level if gap_item else "beginner"
     required_level = gap_item.required_level if gap_item else "intermediate"
@@ -44,74 +47,42 @@ def generate_recommendation_explanation(
     goal_type_str = profile.goal_type or "target role"
     fmt_pref = profile.learning_format or profile.learning_preference or "any format"
 
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    openai_key = os.getenv("OPENAI_API_KEY")
+    prompt = EXPLANATION_PROMPT.format(
+        goal=profile.goal,
+        goal_type=goal_type_str,
+        skill=skill_name,
+        priority_category=priority_category,
+        roadmap_weeks=roadmap_weeks,
+        user_level=user_level,
+        required_level=required_level,
+        budget=profile.budget,
+        language=lang_str,
+        learning_format=fmt_pref,
+        title=resource.title,
+        provider=resource.provider,
+        format=resource.format,
+        cost=resource.cost,
+        res_lang=resource.language,
+        url=resource.url
+    )
 
-    # Tier 1: Gemini API
-    if gemini_key:
+    gemini_key = os.getenv("GEMINI_API_KEY")
+
+    # Primary Provider: Google Gemini API (gemini-3.6-flash)
+    if gemini_key and not gemini_key.startswith("your_"):
         try:
             from google import genai
             client = genai.Client(api_key=gemini_key)
-            prompt = EXPLANATION_PROMPT.format(
-                goal=profile.goal,
-                goal_type=goal_type_str,
-                skill=skill_name,
-                priority_category=priority_category,
-                roadmap_weeks=roadmap_weeks,
-                user_level=user_level,
-                required_level=required_level,
-                budget=profile.budget,
-                language=lang_str,
-                learning_format=fmt_pref,
-                title=resource.title,
-                provider=resource.provider,
-                format=resource.format,
-                cost=resource.cost,
-                res_lang=resource.language,
-                url=resource.url
-            )
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-3.6-flash",
                 contents=prompt
             )
             if response.text:
-                return response.text.strip()
-        except (ValueError, RuntimeError, KeyError, AttributeError) as e:
+                return response.text.strip(), "⚡ Gemini (gemini-3.6-flash)"
+        except Exception as e:  # noqa: BLE001
             print(f"[Explanation Warning] Gemini API failed: {e}. Using template fallback.")
 
-    # Tier 2: OpenAI API
-    if openai_key:
-        try:
-            import openai
-            client = openai.OpenAI(api_key=openai_key)
-            prompt = EXPLANATION_PROMPT.format(
-                goal=profile.goal,
-                goal_type=goal_type_str,
-                skill=skill_name,
-                priority_category=priority_category,
-                roadmap_weeks=roadmap_weeks,
-                user_level=user_level,
-                required_level=required_level,
-                budget=profile.budget,
-                language=lang_str,
-                learning_format=fmt_pref,
-                title=resource.title,
-                provider=resource.provider,
-                format=resource.format,
-                cost=resource.cost,
-                res_lang=resource.language,
-                url=resource.url
-            )
-            res = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            if res.choices and res.choices[0].message.content:
-                return res.choices[0].message.content.strip()
-        except (ValueError, RuntimeError, KeyError, AttributeError) as e:
-            print(f"[Explanation Warning] OpenAI API failed: {e}. Using template fallback.")
-
-    # Tier 3: Deterministic Template Fallback (Offline)
+    # Deterministic Template Fallback (Offline / Key Unconfigured)
     explanation = (
         f"**Why this resource?** We recommended **\"{resource.title}\"** by {resource.provider} because it directly "
         f"bridges your gap in **{skill_name}** from {user_level} to {required_level} level for your {profile.goal} {goal_type_str}.\n"
@@ -120,4 +91,4 @@ def generate_recommendation_explanation(
         f"**Constraint & Format Fit:** Aligns with your **{profile.budget}** budget ({resource.cost}), "
         f"format preference ({resource.format}), and preferred language ({resource.language})."
     )
-    return explanation
+    return explanation, "Deterministic Template Fallback"

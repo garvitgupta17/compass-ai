@@ -12,7 +12,7 @@ import streamlit as st
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from core.adaptation import adapt_roadmap_progress
-from core.evaluator import evaluate_skill_query
+from core.agent import CompassAgent
 from core.priority import calculate_priorities
 from core.profile import UserProfile
 from core.roadmap import generate_roadmap
@@ -876,7 +876,7 @@ else:
                 rec_label = "⭐ RECOMMENDED FOR YOU" if rank_idx == 0 else "ALTERNATIVE RESOURCE"
                 rec_badge_color = "#0284C7" if rank_idx == 0 else "#334155"
 
-                exp = generate_recommendation_explanation(
+                exp, exp_provider = generate_recommendation_explanation(
                     skill_name=item.skill,
                     priority_category=item.priority_category,
                     roadmap_weeks=f"Week {item.week_start}-{item.week_end}",
@@ -901,14 +901,14 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-                with st.expander("View technical matching details"):
+                with st.expander(f"View technical matching details ({exp_provider})"):
                     st.markdown(f"- **Final Composite Score:** `{res.final_score}`")
                     st.markdown(f"- **Vector Similarity:** `{res.vector_similarity}`")
                     st.markdown(f"- **Skill & Level Match Score:** `{res.skill_match_score}`")
                     st.markdown(f"- **Budget Fit Score:** `{res.budget_fit_score}`")
                     st.markdown(f"- **Language Fit Score:** `{res.language_fit_score}`")
                     st.markdown(f"- **Matched User Preferences:** `{', '.join(res.matched_preferences)}`")
-                    st.markdown(f"- **LLM Recommendation Context:** {exp}")
+                    st.markdown(f"- **LLM Recommendation Context ({exp_provider}):**\n{exp}")
 
     # =========================================================================
     # TAB 6: ASK COMPASS (DECISION SUPPORT)
@@ -937,19 +937,37 @@ else:
         )
 
         if query_x:
-            eval_res = evaluate_skill_query(query_x, profile)
-            badge_class = f"verdict-{eval_res.verdict_badge}"
+            agent = CompassAgent(profile, retriever=st.session_state.retriever)
+            agent_log = agent.run(query_x)
+
+            prio_data = agent_log.tool_outputs.get("evaluate_skill_priority", {})
+            badge_class = (
+                "verdict-success" if prio_data.get("priority_tier") == "NOW" 
+                else ("verdict-warning" if prio_data.get("priority_tier") in ["NEXT", "LATER"] else "verdict-error")
+            )
+
             st.markdown(f"""
             <div class="{badge_class}">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:1.1rem;">{eval_res.verdict}</span>
-                    <span style="background:rgba(255,255,255,0.2); padding:2px 10px; border-radius:12px; font-weight:700;">Priority Tier: {eval_res.priority_tier}</span>
+                    <span style="font-size:1.1rem;">{agent_log.final_verdict}</span>
+                    <span style="background:rgba(255,255,255,0.2); padding:2px 10px; border-radius:12px; font-weight:700;">Priority Tier: {agent_log.priority_tier}</span>
                 </div>
             </div>
+            <p style="font-size:0.8rem; color:#94A3B8; margin-top:4px;">{agent_log.provider_source}</p>
             """, unsafe_allow_html=True)
-            st.markdown(f"🎯 **Target Skill Evaluated:** `{eval_res.query_skill}` | 📊 **Relevance Score:** `{eval_res.relevance_score}/10`")
-            st.markdown(f"⏱️ **Timing Guidance:** `{eval_res.recommendation_timing}`")
-            st.markdown(f"💡 **Tradeoff & Opportunity Cost:** {eval_res.tradeoff_analysis}")
+
+            st.markdown(f"🎯 **Target Skill Evaluated:** `{prio_data.get('query_skill')}` | 📊 **Relevance Score:** `{prio_data.get('relevance_score')}/10`")
+            st.markdown(f"⏱️ **Timing Guidance:** `{prio_data.get('recommendation_timing')}`")
+            st.markdown(f"💡 **Tradeoff & Opportunity Cost:** {prio_data.get('tradeoff_analysis')}")
+
+            if agent_log.answer_text:
+                st.markdown(f"🗣️ **Agent Response:**\n{agent_log.answer_text}")
+
+            with st.expander("🛠️ View Agent Execution Trace & Tools Invoked"):
+                st.markdown("**Tools Executed by Compass Agent:**")
+                for t in agent_log.tools_invoked:
+                    st.markdown(f"- ✓ `{t}`")
+                st.json(agent_log.tool_outputs)
 
     # =========================================================================
     # TAB 7: PROGRESS TRACKER & RE-ROUTE

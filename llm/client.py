@@ -1,7 +1,7 @@
 """
 Compass AI - LLM Extraction Client
 Parses natural language text into a validated Pydantic UserProfile object.
-Supports Gemini / OpenAI APIs with a robust offline heuristic fallback.
+Supports Google Gemini API (gemini-3.6-flash) with a robust offline heuristic fallback.
 """
 import json
 import os
@@ -15,6 +15,7 @@ from llm.schemas import ExtractedProfileData
 
 load_dotenv()
 
+
 def extract_profile_from_text(user_input: str) -> tuple[UserProfile, str]:
     """
     Extracts structured UserProfile from natural language user input.
@@ -24,62 +25,33 @@ def extract_profile_from_text(user_input: str) -> tuple[UserProfile, str]:
         raise ValueError("Input text cannot be empty.")
 
     gemini_key = os.getenv("GEMINI_API_KEY")
-    openai_key = os.getenv("OPENAI_API_KEY")
 
-    # 1. Try Gemini API if key exists and is not placeholder
-    if gemini_key and gemini_key != "your_gemini_api_key_here":
+    # 1. Try Google Gemini API (gemini-3.6-flash) if key exists and is valid
+    if gemini_key and not gemini_key.startswith("your_"):
         try:
             profile = _call_gemini_extraction(user_input, gemini_key)
-            return profile, "Gemini API (Structured Extraction)"
-        except (ValueError, RuntimeError, KeyError, AttributeError) as e:
+            if profile:
+                return profile, "⚡ Gemini API (Structured Extraction)"
+        except Exception as e:  # noqa: BLE001
             print(f"[Warning] Gemini API extraction failed ({e}). Falling back to heuristic parser.")
 
-    # 2. Try OpenAI API if key exists and is not placeholder
-    if openai_key and openai_key != "your_openai_api_key_here":
-        try:
-            profile = _call_openai_extraction(user_input, openai_key)
-            return profile, "OpenAI API (Structured Extraction)"
-        except (ValueError, RuntimeError, KeyError, AttributeError) as e:
-            print(f"[Warning] OpenAI API extraction failed ({e}). Falling back to heuristic parser.")
-
-    # 3. Offline Heuristic Rule-Based Fallback
+    # 2. Offline Heuristic Rule-Based Fallback
     profile = _heuristic_profile_extraction(user_input)
     return profile, "Rule-based Heuristic Parser (Offline Fallback)"
 
 
 def _call_gemini_extraction(user_input: str, api_key: str) -> UserProfile:
-    """Calls Google Gemini API to extract structured JSON profile."""
+    """Calls Google Gemini API to extract structured JSON profile using gemini-3.6-flash."""
     from google import genai
+
     client = genai.Client(api_key=api_key)
-    
     prompt = f"{PROFILE_EXTRACTION_PROMPT}\n\nUser Input:\n{user_input}"
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3.6-flash",
         contents=prompt
     )
-    
+
     raw_text = response.text
-    json_str = _clean_json_output(raw_text)
-    data_dict = json.loads(json_str)
-    extracted = ExtractedProfileData(**data_dict)
-    return extracted.to_user_profile()
-
-
-def _call_openai_extraction(user_input: str, api_key: str) -> UserProfile:
-    """Calls OpenAI API to extract structured JSON profile."""
-    from openai import OpenAI
-    client = OpenAI(api_key=api_key)
-    
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": PROFILE_EXTRACTION_PROMPT},
-            {"role": "user", "content": user_input}
-        ],
-        temperature=0.0
-    )
-    
-    raw_text = response.choices[0].message.content
     json_str = _clean_json_output(raw_text)
     data_dict = json.loads(json_str)
     extracted = ExtractedProfileData(**data_dict)

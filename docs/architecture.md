@@ -16,21 +16,23 @@ Compass AI adheres to a **Hybrid Architecture** separating deterministic busines
                                                       |
                                                       v
                                     +-----------------------------------+
-                                    |   Phase 4: LLM Profile Extractor  |
-                                    |   (Gemini / OpenAI / Heuristic)   |
+                                    | Primary Generative LLM:           |
+                                    | Google Gemini API                 |
+                                    | (gemini-3.6-flash)                |
+                                    | [Fallback: Heuristic Parser]      |
                                     +-----------------------------------+
                                                       |
                                                       v
                                     +-----------------------------------+
-                                    | Phase 3: Pydantic User Profile    |
+                                    | Pydantic User Profile             |
                                     +-----------------------------------+
                                                       |
                                                       v
       +-----------------------------------------------------------------------------------------------+
       |                                  DETERMINISTIC ENGINES                                        |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
-      |  | Phase 5: Skill Gap | ---> | Phase 6: Priority  | ---> | Phase 7: Capacity Roadmap Engine|  |
-      |  | Engine (Numerical) |      | Engine (Formula)   |      | (Sequential Weekly Schedule)    |  |
+      |  | Skill Gap Engine   | ---> | Priority Engine    | ---> | Capacity Roadmap Engine         |  |
+      |  | (Numerical Step)   |      | (Grounded Formula) |      | (Sequential Weekly Schedule)    |  |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
       +-----------------------------------------------------------------------------------------------+
                                                       |
@@ -38,20 +40,21 @@ Compass AI adheres to a **Hybrid Architecture** separating deterministic busines
       +-----------------------------------------------------------------------------------------------+
       |                                   RAG & RETRIEVAL SYSTEM                                      |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
-      |  | Phase 8 & 9: Vector| ---> | Phase 10: FAISS    | ---> | Phase 11: Hard Constraint Filter|  |
-      |  | Embeddings (384-D) |      | Store (IndexFlatIP)|      | & Multi-Factor Ranking Engine   |  |
+      |  | Vector Embeddings  | ---> | FAISS Vector Store | ---> | Hard Constraint Filter &        |  |
+      |  | (384-D Space)      |      | (IndexFlatIP)      |      | Multi-Factor Ranking Engine     |  |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
       +-----------------------------------------------------------------------------------------------+
                                                       |
                                                       v
                                     +-----------------------------------+
-                                    | Phase 12: Grounded Explanations   |
-                                    | & Phase 13: "Should I Learn X?"   |
+                                    | Generative Explanation &          |
+                                    | Compass Agent Decision Support    |
+                                    | Grounded by Gemini (gemini-3.6-flash) |
                                     +-----------------------------------+
                                                       |
                                                       v
                                     +-----------------------------------+
-                                    | Phase 14: Streamlit Web UI App    |
+                                    | Streamlit Web Application Dashboard|
                                     +-----------------------------------+
 ```
 
@@ -59,12 +62,11 @@ Compass AI adheres to a **Hybrid Architecture** separating deterministic busines
 
 ## 3. Component Deep Dive
 
-### 3.1 Profile Extractor (`llm/client.py`)
-- Extracts structured profile data from natural language text.
-- Uses a **3-tier fallback chain**:
-  1. Google Gemini API (`gemini-2.5-flash`) structured JSON output.
-  2. OpenAI API (`gpt-3.5-turbo`) JSON mode.
-  3. Offline Heuristic Rule-Based Parser (regex and keyword matching).
+### 3.1 LLM Generation & Explanation Layer (`llm/client.py`, `llm/explain.py`)
+- Uses **Google Gemini API (`gemini-3.6-flash`)** as the primary generative reasoning and explanation model.
+- **Fallback Chain**:
+  1. Google Gemini API (`gemini-3.6-flash`)
+  2. Offline Rule-Based Heuristic Parser / Template Fallback
 
 ### 3.2 Deterministic Engines (`core/`)
 - **Skill Gap Engine (`core/skill_gap.py`)**: Quantifies proficiency levels (`none` = 0, `beginner` = 1, `intermediate` = 2, `advanced` = 3) and computes gap distances ($\max(0, \text{Required} - \text{User})$).
@@ -81,6 +83,8 @@ Compass AI adheres to a **Hybrid Architecture** separating deterministic busines
 ---
 
 ## 4. Key Technical Decisions
-1. **Pydantic v2**: Guaranteed runtime data validation and strict type safety.
-2. **FAISS (`faiss-cpu==1.8.0`)**: Blazing fast in-memory vector similarity index.
-3. **Zero Hallucination Guarantee**: All recommendations originate strictly from curated dataset resources (`data/resources.csv`).
+1. **Google Gemini API (`gemini-3.6-flash`) Integration**: Generates grounded explanations and conversational responses via `google-genai` SDK.
+2. **IBM BOB**: Incorporated during the development stage for agent ideation, prompt engineering, tool architecture, and test design (documented in `docs/ibm_bob_usage.md`).
+3. **Pydantic v2**: Guaranteed runtime data validation and strict type safety.
+4. **FAISS (`faiss-cpu`)**: Blazing fast in-memory vector similarity index.
+5. **Zero Hallucination Guarantee**: All recommendations originate strictly from curated dataset resources (`data/resources.csv`).

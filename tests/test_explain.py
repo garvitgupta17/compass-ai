@@ -35,15 +35,15 @@ def test_explanation_generation():
         text_content="Python course"
     )
     
-    exp = generate_recommendation_explanation(
+    exp, provider = generate_recommendation_explanation(
         skill_name="Python",
         priority_category="NOW",
         roadmap_weeks="Weeks 1-2",
         resource=doc,
         profile=profile
     )
-    
-    print(f"✓ Generated Explanation:\n{exp}")
+
+    print(f"✓ Generated Explanation ({provider}):\n{exp}")
     assert len(exp) > 50, "Explanation must be a detailed text string"
     assert "Python" in exp, "Explanation must reference skill name"
     assert "FreeCodeCamp" in exp or "free" in exp.lower(), "Explanation must reference provider or cost"

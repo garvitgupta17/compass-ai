@@ -1,8 +1,9 @@
 """
 Compass AI - "Should I Learn X?" Evaluation Engine
 Evaluates whether learning a specific query skill is critical, elective, or a distraction
-for a user's target career goal and timeline.
+for a user's target career goal and timeline. Grounded by Google Gemini API (gemini-3.6-flash).
 """
+
 import os
 import re
 
@@ -12,6 +13,7 @@ from pydantic import BaseModel, Field
 from core.priority import calculate_priorities
 from core.profile import UserProfile
 from core.skill_gap import calculate_skill_gap
+from llm.prompts import ASK_COMPASS_GEMINI_PROMPT, GEMINI_SYSTEM_PROMPT
 
 
 class EvaluationResult(BaseModel):
@@ -26,6 +28,8 @@ class EvaluationResult(BaseModel):
     relevance_score: int = Field(..., ge=1, le=10)
     tradeoff_analysis: str = Field(..., description="Opportunity cost analysis relative to deadline and core gaps")
     recommendation_timing: str = Field(..., description="'Learn Now', 'Learn After Core Roadmap', or 'Skip for Current Goal'")
+    generative_explanation: str | None = Field(default=None, description="Gemini LLM natural language explanation")
+    provider_source: str = Field(default="Deterministic Engine", description="Source provider label")
 
 
 def evaluate_skill_query(
@@ -51,7 +55,7 @@ def evaluate_skill_query(
     # Extract target skill name from natural query if phrases are present
     clean_skill = raw_query
     is_skip_query = "skip" in raw_lower
-    
+
     # Extract skill names if question format is used
     patterns = [
         r"should i learn\s+([a-zA-Z0-9\s]+?)(?:\s+now|\s+before|\s+for|\?|$)",
@@ -98,7 +102,8 @@ def evaluate_skill_query(
             relevance = importance
             timing = "Learn Now"
             tradeoff = f"Do NOT skip {clean_skill}. It is a core requirement (Importance: {importance}/10) for {goal_name}."
-        return EvaluationResult(
+
+        eval_res = EvaluationResult(
             query_skill=clean_skill,
             target_goal=goal_name,
             verdict=verdict,
@@ -108,6 +113,7 @@ def evaluate_skill_query(
             tradeoff_analysis=tradeoff,
             recommendation_timing=timing
         )
+        return _enrich_with_gemini_if_available(eval_res, profile, raw_query)
 
     # 2. Directly Required Skill
     if query_lower in required_skills:
@@ -160,7 +166,7 @@ def evaluate_skill_query(
             f"({', '.join(urgent_gaps[:2])}) instead."
         )
 
-    return EvaluationResult(
+    eval_res = EvaluationResult(
         query_skill=clean_skill,
         target_goal=goal_name,
         verdict=verdict,
@@ -170,3 +176,55 @@ def evaluate_skill_query(
         tradeoff_analysis=tradeoff,
         recommendation_timing=timing
     )
+    return _enrich_with_gemini_if_available(eval_res, profile, raw_query)
+
+
+def _enrich_with_gemini_if_available(
+    eval_res: EvaluationResult,
+    profile: UserProfile,
+    user_query: str,
+    retrieved_resources: list | None = None
+) -> EvaluationResult:
+    """Enriches evaluation result with Google Gemini API (gemini-3.6-flash) explanation if key is present."""
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_key or gemini_key.startswith("your_"):
+        return eval_res
+
+    try:
+        from google import genai
+
+        res_context_str = "None available"
+        if retrieved_resources:
+            res_context_str = "\n".join(
+                f"- {r.resource.title} by {r.resource.provider} ({r.resource.format}, {r.resource.cost})"
+                for r in retrieved_resources[:2]
+            )
+
+        client = genai.Client(api_key=gemini_key)
+        prompt = ASK_COMPASS_GEMINI_PROMPT.format(
+            system_prompt=GEMINI_SYSTEM_PROMPT,
+            goal=profile.goal,
+            deadline_weeks=profile.deadline_weeks,
+            hours_per_week=profile.hours_per_week,
+            skills=", ".join(f"{k}:{v}" for k, v in profile.skills.items()),
+            query_skill=eval_res.query_skill,
+            verdict=eval_res.verdict,
+            priority_tier=eval_res.priority_tier,
+            relevance_score=eval_res.relevance_score,
+            recommendation_timing=eval_res.recommendation_timing,
+            tradeoff_analysis=eval_res.tradeoff_analysis,
+            resource_context=res_context_str,
+            user_question=user_query
+        )
+
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
+        if response.text:
+            eval_res.generative_explanation = response.text.strip()
+            eval_res.provider_source = "⚡ Gemini + Compass Agent"
+    except Exception as e:  # noqa: BLE001
+        print(f"[Ask Compass Warning] Gemini explanation failed: {e}. Falling back to deterministic output.")
+
+    return eval_res

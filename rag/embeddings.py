@@ -48,10 +48,12 @@ class EmbeddingGenerator:
         self.gemini_key = os.getenv("GEMINI_API_KEY")
         self.openai_key = os.getenv("OPENAI_API_KEY")
 
-        if self.gemini_key:
+        if self.gemini_key and not self.gemini_key.startswith("your_"):
             self.provider = "gemini"
-        elif self.openai_key:
+        elif self.openai_key and not self.openai_key.startswith("your_"):
             self.provider = "openai"
+        else:
+            self.provider = "offline"
 
     def embed_text(self, text: str | list[str]) -> np.ndarray:
         """
@@ -70,21 +72,27 @@ class EmbeddingGenerator:
         if self.provider == "gemini":
             try:
                 from google import genai
+                from google.genai import types
+
                 client = genai.Client(api_key=self.gemini_key)
-                vectors = []
-                for t in texts:
-                    res = client.models.embed_content(
-                        model="text-embedding-004",
-                        contents=t
+                res = client.models.embed_content(
+                    model="gemini-embedding-001",
+                    contents=texts,
+                    config=types.EmbedContentConfig(
+                        output_dimensionality=EMBEDDING_DIM
                     )
-                    if not res.embeddings:
-                        raise ValueError("Gemini returned no embeddings")
-                    emb = np.array(res.embeddings[0].values, dtype=np.float32)
-                    # Project or truncate to 384 dim if needed
-                    emb_384 = emb[:EMBEDDING_DIM] if len(emb) >= EMBEDDING_DIM else np.pad(emb, (0, EMBEDDING_DIM - len(emb)))
-                    vectors.append(_normalize(emb_384))
+                )
+                if not res.embeddings or not isinstance(res.embeddings, list):
+                    raise ValueError("Gemini returned no valid embeddings list")
+
+                vectors = []
+                for item in res.embeddings:
+                    emb = np.array(item.values, dtype=np.float32)
+                    if emb.shape != (EMBEDDING_DIM,):
+                        raise ValueError(f"Gemini returned invalid embedding shape {emb.shape}")
+                    vectors.append(_normalize(emb))
                 return np.vstack(vectors)
-            except (ValueError, RuntimeError, KeyError, AttributeError) as e:
+            except Exception as e:  # noqa: BLE001
                 print(f"[EmbeddingGenerator Warning] Gemini API embedding failed: {e}. Falling back to offline vectorizer.")
 
         # Tier 2: OpenAI API
