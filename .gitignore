@@ -1,0 +1,22 @@
+# Python environment and cache
+venv/
+.venv/
+env/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# IDE / Editor files
+.vscode/
+.idea/
+.DS_Store
+
+# Data / FAISS indices generated at runtime
+rag/faiss_index/
+data/*.index

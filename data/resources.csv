@@ -1,0 +1,32 @@
+title,skill,level,language,cost,format,duration,provider,url,prerequisites,last_verified
+Python for Beginners,Python,beginner,English,free,video,6h,FreeCodeCamp,https://www.youtube.com/watch?v=rfscVS0vtbw,none,2026-08-01
+Python Programming in Hindi,Python,beginner,Hindi,free,video,8h,CodeWithHarry,https://www.youtube.com/playlist?list=PLu0W_9lII9agwh1XjRt24GH1y0473d262,none,2026-08-01
+Intermediate Python Mastery,Python,intermediate,English,free,video,5h,Corey Schafer,https://www.youtube.com/user/schafer55,Python,2026-08-01
+Python Data Structures & Algorithms,Python,intermediate,English,free,course,12h,Udacity,https://www.udacity.com/course/data-structures-and-algorithms-in-python--ud513,Python,2026-08-01
+SQL for Beginners Course,SQL,beginner,English,free,video,4h,FreeCodeCamp,https://www.youtube.com/watch?v=HXV3zeQKqGY,none,2026-08-01
+SQL Tutorial in Hindi,SQL,beginner,Hindi,free,video,5h,Kunal Kushwaha,https://www.youtube.com/watch?v=hlGoQC332VM,none,2026-08-01
+Complete SQL Bootcamp,SQL,beginner,English,paid,course,9h,Udemy,https://www.udemy.com/course/the-complete-sql-bootcamp/,none,2026-08-01
+Advanced SQL for Analytics,Advanced SQL,intermediate,English,free,interactive,10h,Mode Analytics,https://mode.com/sql-tutorial/advanced-sql/,SQL,2026-08-01
+Advanced Window Functions & Query Optimization,Advanced SQL,advanced,English,free,article,4h,PostgreSQL Docs,https://www.postgresql.org/docs/current/tutorial-window.html,SQL,2026-08-01
+Intro to Statistics for Data Science,Statistics & Probability,beginner,English,free,course,8h,Khan Academy,https://www.khanacademy.org/math/statistics-probability,none,2026-08-01
+Statistics for Machine Learning in Hindi,Statistics & Probability,beginner,Hindi,free,video,6h,Krish Naik,https://www.youtube.com/playlist?list=PLZoTAELRMXVN7QqBOaACilV5hLDqIcAZ5,none,2026-08-01
+Data Visualization with Tableau & PowerBI,Data Visualization,beginner,English,free,video,5h,FreeCodeCamp,https://www.youtube.com/watch?v=TPPl5N7fHog,Python;SQL,2026-08-01
+Data Visualization with Matplotlib & Seaborn,Data Visualization,intermediate,English,free,video,4h,Corey Schafer,https://www.youtube.com/playlist?list=PL-osiE80TeTvipOqomVEeZ1HRrcEvtZB_,Python,2026-08-01
+Data Modeling Foundations,Data Modeling,intermediate,English,free,video,3h,IBM Developer,https://developer.ibm.com/articles/db-data-modeling-concepts/,SQL,2026-08-01
+Dimensional Modeling & Star Schema,Data Modeling,intermediate,English,free,book,15h,Kimball Group,https://www.kimballgroup.com/data-warehouse-architecture/,SQL,2026-08-01
+ETL & Data Pipeline Fundamentals,ETL,intermediate,English,free,video,6h,FreeCodeCamp,https://www.youtube.com/watch?v=q1A-a6M0_X0,Python;SQL,2026-08-01
+Building Airflow ETL Pipelines,ETL,intermediate,English,free,video,4h,Marc Lamberti,https://www.youtube.com/watch?v=AHMm1b3tS90,Python;ETL,2026-08-01
+Data Warehousing Concepts & Snowflake,Data Warehousing,intermediate,English,free,video,5h,FreeCodeCamp,https://www.youtube.com/watch?v=0h615k64h_A,SQL;Data Modeling,2026-08-01
+Google Cloud Fundamentals,Cloud Fundamentals,beginner,English,free,course,6h,Coursera,https://www.coursera.org/learn/gcp-fundamentals,none,2026-08-01
+AWS Certified Cloud Practitioner,Cloud Fundamentals,beginner,English,free,video,13h,FreeCodeCamp,https://www.youtube.com/watch?v=SOTamWNgDKc,none,2026-08-01
+Apache Spark & PySpark for Beginners,Spark & Big Data,advanced,English,free,video,7h,FreeCodeCamp,https://www.youtube.com/watch?v=_C8KWso4neU,Python;SQL,2026-08-01
+PySpark Data Engineering Course,Spark & Big Data,advanced,English,free,video,8h,Krish Naik,https://www.youtube.com/playlist?list=PLZoTAELRMXVMSaL-L_9S8bzhx6WcR-y_a,Python;SQL,2026-08-01
+Machine Learning Specialization,Machine Learning,intermediate,English,paid,course,30h,Coursera / DeepLearning.AI,https://www.coursera.org/specializations/machine-learning-introduction,Python;Statistics & Probability,2026-08-01
+Machine Learning Course in Hindi,Machine Learning,intermediate,Hindi,free,video,12h,CodeWithHarry,https://www.youtube.com/playlist?list=PLu0W_9lII9ai6fAMJh4acZmifua1ci6CW,Python;Statistics & Probability,2026-08-01
+Scikit-Learn Machine Learning Pipeline,Machine Learning,intermediate,English,free,video,4h,Corey Schafer,https://www.youtube.com/watch?v=pqNCD_5r0IU,Python;Machine Learning,2026-08-01
+Deep Learning Specialization,Deep Learning,advanced,English,paid,course,40h,Coursera / DeepLearning.AI,https://www.coursera.org/specializations/deep-learning,Machine Learning,2026-08-01
+PyTorch for Deep Learning in 10 Hours,Deep Learning,advanced,English,free,video,10h,Daniel Bourke,https://www.youtube.com/watch?v=V_xro1bcAuA,Machine Learning,2026-08-01
+Full Stack MLOps Course,MLOps,advanced,English,free,course,20h,DataTalksClub,https://github.com/DataTalksClub/mlops-zoomcamp,Machine Learning;Cloud Fundamentals,2026-08-01
+End-to-End Data Engineering Portfolio Project,Portfolio Projects,intermediate,English,free,video,5h,Darshil Parmar,https://www.youtube.com/watch?v=WpQed4hUY0o,Python;SQL,2026-08-01
+End-to-End Data Analytics Portfolio Project,Portfolio Projects,intermediate,English,free,video,4h,Alex The Analyst,https://www.youtube.com/watch?v=qfyynHBFOsM,Python;SQL,2026-08-01
+End-to-End ML Pipeline Project,Portfolio Projects,intermediate,English,free,video,6h,Krish Naik,https://www.youtube.com/watch?v=Mjyp65mHlF8,Python;Machine Learning,2026-08-01

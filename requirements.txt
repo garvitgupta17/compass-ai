@@ -1,0 +1,8 @@
+# Compass AI - Core Project Dependencies
+
+streamlit>=1.30.0
+pandas>=2.0.0
+pydantic>=2.5.0
+networkx>=3.0
+numpy<2
+python-dotenv>=1.0.0

@@ -1,0 +1,24 @@
+goal,skill,importance
+Data Analyst,SQL,10
+Data Analyst,Data Visualization,9
+Data Analyst,Python,8
+Data Analyst,Advanced SQL,8
+Data Analyst,Statistics & Probability,8
+Data Analyst,Data Modeling,7
+Data Analyst,Portfolio Projects,8
+Data Engineer,SQL,10
+Data Engineer,Python,9
+Data Engineer,ETL,9
+Data Engineer,Data Modeling,8
+Data Engineer,Data Warehousing,8
+Data Engineer,Cloud Fundamentals,7
+Data Engineer,Spark & Big Data,6
+Data Engineer,Portfolio Projects,8
+ML Engineer,Python,10
+ML Engineer,Machine Learning,10
+ML Engineer,Statistics & Probability,9
+ML Engineer,SQL,7
+ML Engineer,Deep Learning,7
+ML Engineer,MLOps,7
+ML Engineer,Cloud Fundamentals,6
+ML Engineer,Portfolio Projects,8

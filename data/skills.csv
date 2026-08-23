@@ -1,0 +1,15 @@
+skill,level,prerequisites
+Python,beginner,none
+SQL,intermediate,none
+Advanced SQL,intermediate,SQL
+Statistics & Probability,beginner,none
+Data Visualization,beginner,Python;SQL
+Data Modeling,intermediate,SQL
+ETL,intermediate,Python;SQL
+Data Warehousing,intermediate,SQL;Data Modeling
+Cloud Fundamentals,beginner,none
+Spark & Big Data,advanced,Python;SQL
+Machine Learning,intermediate,Python;Statistics & Probability
+Deep Learning,advanced,Machine Learning
+MLOps,advanced,Machine Learning;Cloud Fundamentals
+Portfolio Projects,intermediate,Python;SQL

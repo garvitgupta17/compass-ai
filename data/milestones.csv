@@ -1,0 +1,15 @@
+skill,milestone,default_hours
+Python,"Write clean modular Python scripts using functions, OOP, and data structures.",12
+SQL,"Write complex SQL queries using JOINs, window functions, CTEs, and GROUP BY.",15
+Advanced SQL,"Optimize query performance using indexes, execution plans, and partitioning.",12
+Statistics & Probability,"Perform descriptive statistics, hypothesis testing, and probability distributions.",10
+Data Visualization,"Create interactive dashboards using PowerBI, Tableau, or Matplotlib.",10
+Data Modeling,"Design ER diagrams, Star Schema, and Snowflake dimensional models.",12
+ETL,"Build automated data extraction, transformation, and loading pipelines.",20
+Data Warehousing,"Architect data warehouse tables and staging layers in Snowflake or BigQuery.",15
+Cloud Fundamentals,"Configure cloud IAM, blob storage, compute instances, and security policies.",12
+Spark & Big Data,"Process multi-gigabyte datasets using PySpark and distributed DataFrames.",20
+Machine Learning,"Train, evaluate, and tune supervised & unsupervised ML models using Scikit-Learn.",25
+Deep Learning,"Build neural networks and computer vision/NLP models using PyTorch.",30
+MLOps,"Build automated ML training pipelines, model registries, and Docker API deployments.",25
+Portfolio Projects,"Publish a complete end-to-end GitHub project with documentation.",20
