@@ -1,8 +1,19 @@
-# Compass AI - Core Project Dependencies
+# Compass AI - Runtime Dependencies
 
 streamlit>=1.30.0
 pandas>=2.0.0
 pydantic>=2.5.0
-networkx>=3.0
 numpy<2
+networkx>=3.0
 python-dotenv>=1.0.0
+
+# AI / LLM
+google-genai>=1.0.0
+openai>=1.0.0
+
+# Vector Search
+faiss-cpu>=1.7.4
+
+# Development / Testing
+pytest>=8.0.0
+ruff>=0.8.0
