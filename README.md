@@ -129,10 +129,10 @@ CompassAI Project/
 ### 1. Environment Setup
 ```bash
 # Create Python 3.10 virtual environment
-python3.10 -m venv venv
+python3.10 -m venv .venv
 
 # Activate virtual environment
-source venv/bin/activate
+source .venv/bin/activate
 
 # Install requirements
 pip install -r requirements.txt
