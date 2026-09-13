@@ -14,12 +14,12 @@ In accordance with the **1M1B Virtual Internship "AI for Sustainability"** requi
 - **IBM BOB Role**: Assisted in defining tool boundaries (`get_skill_gap`, `evaluate_skill_priority`, `search_learning_resources`, `get_roadmap_context`) to wrap existing functions cleanly while enforcing strict decision authority rules.
 
 ### Stage 2: Prompt Refinement & System Instructions
-- **Task**: Creating system prompts for Google Gemini API (`gemini-3.6-flash`) that enforce zero-hallucination policies and strict adherence to deterministic evaluation outcomes.
+- **Task**: Creating system prompts for Google Gemini API (`gemini-3.6-flash`) that enforce grounded explanation policies and strict adherence to deterministic evaluation outcomes.
 - **IBM BOB Role**: Iterated on `GEMINI_SYSTEM_PROMPT` and `ASK_COMPASS_GEMINI_PROMPT` to mandate grounded explanations and prevent resource or URL inventions.
 
 ### Stage 3: Test Design & Safety Guardrails
 - **Task**: Designing unit test suites covering fallback paths, mocked Gemini API responses, credential safety, and non-overriding constraints.
-- **IBM BOB Role**: Guided the structure of `tests/test_gemini.py` and `tests/test_agent.py` ensuring 100% test coverage without requiring active external API keys during testing.
+- **IBM BOB Role**: Guided the structure of `tests/test_gemini.py` and `tests/test_agent.py` ensuring comprehensive test coverage across 51 automated tests and 18 test modules without requiring active external API keys during testing.
 
 ---
 

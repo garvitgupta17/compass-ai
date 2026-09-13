@@ -671,7 +671,7 @@ else:
                 - Hard resource constraint filtering (Budget, Language)
 
                 **AI Components:**
-                - Gemini / OpenAI multi-tier text embeddings
+                - Gemini text embeddings (with offline hash vectorizer fallback)
                 - FAISS vector similarity search
                 - Contextual recommendation explanations
                 - Conversational decision support evaluator

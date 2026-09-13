@@ -1,7 +1,12 @@
 """
 Compass AI - Embeddings Generator Wrapper
-Multi-tiered vector embedding generator supporting Google Gemini, OpenAI,
-and a deterministic offline hash vectorizer fallback.
+Vector embedding generator supporting Google Gemini embeddings
+with a deterministic hash-based vectorizer offline fallback.
+
+Note:
+The application uses Gemini embeddings when API access is available.
+A deterministic hash-based vector representation is provided as an offline/testing
+fallback so that core workflows remain testable without external API access.
 """
 import hashlib
 import os
@@ -41,17 +46,14 @@ def _fallback_hash_embedding(text: str, dim: int = EMBEDDING_DIM) -> np.ndarray:
 
 class EmbeddingGenerator:
     """
-    Multi-provider embedding generator with seamless offline fallback.
+    Gemini embedding generator with seamless offline fallback.
     """
     def __init__(self):
         self.provider = "offline"
         self.gemini_key = os.getenv("GEMINI_API_KEY")
-        self.openai_key = os.getenv("OPENAI_API_KEY")
 
         if self.gemini_key and not self.gemini_key.startswith("your_"):
             self.provider = "gemini"
-        elif self.openai_key and not self.openai_key.startswith("your_"):
-            self.provider = "openai"
         else:
             self.provider = "offline"
 
@@ -68,7 +70,7 @@ class EmbeddingGenerator:
         if not texts:
             return np.empty((0, EMBEDDING_DIM), dtype=np.float32)
 
-        # Tier 1: Gemini API
+        # Primary: Gemini API Embeddings
         if self.provider == "gemini":
             try:
                 from google import genai
@@ -95,23 +97,6 @@ class EmbeddingGenerator:
             except Exception as e:  # noqa: BLE001
                 print(f"[EmbeddingGenerator Warning] Gemini API embedding failed: {e}. Falling back to offline vectorizer.")
 
-        # Tier 2: OpenAI API
-        if self.provider == "openai":
-            try:
-                import openai
-                client = openai.OpenAI(api_key=self.openai_key)
-                res = client.embeddings.create(
-                    input=texts,
-                    model="text-embedding-3-small"
-                )
-                vectors = []
-                for item in res.data:
-                    emb = np.array(item.embedding, dtype=np.float32)[:EMBEDDING_DIM]
-                    vectors.append(_normalize(emb))
-                return np.vstack(vectors)
-            except (ValueError, RuntimeError, KeyError, AttributeError) as e:
-                print(f"[EmbeddingGenerator Warning] OpenAI API embedding failed: {e}. Falling back to offline vectorizer.")
-
-        # Tier 3: Offline Fallback Vectorizer
+        # Secondary: Deterministic Hash-Based Fallback Vectorizer
         vectors = [_fallback_hash_embedding(t, EMBEDDING_DIM) for t in texts]
         return np.vstack(vectors)

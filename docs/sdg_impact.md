@@ -22,7 +22,7 @@ The initiative directly addresses **UN Sustainable Development Goal 4: Quality E
 - **Problem**: Black-box AI recommendations can mislead students with inaccurate timelines or hallucinated courses.
 - **Compass AI Solution**:
   - **Deterministic Rules Engine**: Core gap scoring, priorities, and roadmaps are calculated using open, mathematical formulas.
-  - **Zero-Hallucination RAG**: All recommended learning links stem strictly from curated, verified databases.
+  - **Grounded RAG Resource Indexing**: All recommended learning links stem strictly from curated, verified databases, while Gemini generates explanations restricted to deterministic context.
 
 ---
 

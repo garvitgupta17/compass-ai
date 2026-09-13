@@ -6,7 +6,7 @@
 - **Safety & Non-Overriding AI:** Generative LLMs (Gemini) are restricted to explanation and conversational support. They cannot independently alter skill gap scores, priority matrices, prerequisite protections, or capacity allocations.
 - **Ethics:** Compass AI does not promise employment or guaranteed salaries.
 - **Privacy:** Minimal data collection; API credentials are kept securely in local `.env` configuration.
-- **Zero Hallucination Guarantee:** Resource recommendations and links originate strictly from curated dataset resources (`data/resources.csv`).
+- **Grounded Resource Recommendations:** Resource titles, providers, and URLs are selected exclusively from the curated resource dataset (`data/resources.csv`), while Gemini is restricted to generating explanations from deterministic context.
 
 ## 2. Development Assistant vs. Runtime LLM
 - **IBM BOB**: Incorporated during the **development stage** for agent architecture ideation, tool design, prompt engineering, and test design (see `docs/ibm_bob_usage.md`).

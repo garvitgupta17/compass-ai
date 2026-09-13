@@ -21,6 +21,15 @@ By combining deterministic business logic with Retrieval-Augmented Generation (R
 
 ---
 
+## 🔑 Key Architectural Design Principles
+
+- **Deterministic Decision Authority**: Skill gap distances, priority scores, prerequisite protections, and weekly capacity allocations are computed via deterministic Python engines.
+- **Grounded Resource Recommendations**: Resource titles, providers, and URLs are selected exclusively from the curated resource dataset (`data/resources.csv`), while Gemini is restricted to generating explanations from deterministic context.
+- **Embedding Provider & Offline Fallback**: The application uses Gemini embeddings (`gemini-embedding-001`) when API access is available. A deterministic hash-based vector representation is provided as an offline/testing fallback so that core workflows remain testable without external API access.
+- **Sequential Roadmap Capacity**: The current roadmap engine prioritizes prerequisite ordering and sequential skill progression rather than solving a full bin-packing optimization problem for weekly capacity.
+
+---
+
 ## 🏗️ System Architecture
 
 ```
@@ -55,7 +64,7 @@ By combining deterministic business logic with Retrieval-Augmented Generation (R
       |                                   RAG & RETRIEVAL SYSTEM                                      |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
       |  | Vector Embeddings  | ---> | FAISS Vector Store | ---> | Hard Constraint Filter &        |  |
-      |  | (384-D Space)      |      | (IndexFlatIP)      |      | Multi-Factor Ranking Engine     |  |
+      |  | (Gemini / Hash)    |      | (IndexFlatIP)      |      | Multi-Factor Ranking Engine     |  |
       |  +--------------------+      +--------------------+      +---------------------------------+  |
       +-----------------------------------------------------------------------------------------------+
                                                       |
@@ -97,11 +106,11 @@ CompassAI Project/
 │   └── explain.py           # Recommendation Explanation Generator (Google Gemini)
 ├── rag/
 │   ├── ingest.py            # Resource Dataset Preprocessing & Ingestion
-│   ├── embeddings.py        # Embedding Generator (Gemini/Hash fallback)
+│   ├── embeddings.py        # Embedding Generator (Gemini / Offline Hash fallback)
 │   ├── retriever.py         # FAISS Vector Store Index
 │   └── ranking.py           # Hard Constraint Filtering & Multi-Factor Ranking
 ├── data/
-│   ├── goals.csv            # Career goal definitions
+│   ├── goals.csv            # Career goal definitions & descriptions
 │   ├── skills.csv           # Skill definitions & prerequisites
 │   ├── goal_skills.csv      # Importance weights (1-10)
 │   ├── resources.csv        # Curated learning resources database
@@ -111,24 +120,27 @@ CompassAI Project/
 │   ├── datasets.md          # Dataset schemas & data governance
 │   ├── ibm_bob_usage.md     # IBM BOB Development Stage Integration Log
 │   ├── responsible_ai.md    # Responsible AI Framework & SDG 4 Alignment
+│   ├── presentation_script.md # Internship presentation script
 │   └── sdg_impact.md        # UN SDG 4 Quality Education alignment
 └── tests/
-    ├── test_gemini.py       # Google Gemini API integration test suite (Mocked & Fallback)
+    ├── test_adaptation.py   # Roadmap adaptation unit tests
     ├── test_agent.py        # Compass Agent & Agentic Tools unit test suite
     ├── test_dataset.py      # Dataset integrity unit tests
-    ├── test_profile.py      # UserProfile schema unit tests
-    ├── test_llm.py          # LLM profile extraction unit tests
-    ├── test_skill_gap.py    # Skill gap engine unit tests
-    ├── test_priority.py     # Priority engine unit tests
-    ├── test_roadmap.py      # Roadmap engine unit tests
-    ├── test_ingest.py       # Resource ingestion unit tests
+    ├── test_e2e.py          # End-to-End integration test suite
     ├── test_embeddings.py   # Embedding generator unit tests
-    ├── test_retriever.py    # FAISS retrieval unit tests
-    ├── test_ranking.py      # Filtering and ranking unit tests
-    ├── test_explain.py      # Explanation generator unit tests
     ├── test_evaluator.py    # Evaluation engine unit tests
-    ├── test_adaptation.py   # Roadmap adaptation unit tests
-    └── test_e2e.py          # End-to-End integration test suite
+    ├── test_explain.py      # Explanation generator unit tests
+    ├── test_gemini.py       # Google Gemini API integration test suite (Mocked & Fallback)
+    ├── test_ingest.py       # Resource ingestion unit tests
+    ├── test_llm.py          # LLM profile extraction unit tests
+    ├── test_phase2_decisions.py # Core decision engine validation suite
+    ├── test_phase10_verification.py # Full system & RAG coverage verification suite
+    ├── test_priority.py     # Priority engine unit tests
+    ├── test_profile.py      # UserProfile schema unit tests
+    ├── test_ranking.py      # Filtering and ranking unit tests
+    ├── test_retriever.py    # FAISS retrieval unit tests
+    ├── test_roadmap.py      # Roadmap engine unit tests
+    └── test_skill_gap.py    # Skill gap engine unit tests
 ```
 
 ---
@@ -138,10 +150,10 @@ CompassAI Project/
 ### 1. Environment Setup
 ```bash
 # Create Python 3.10 virtual environment
-python3.10 -m venv venv
+python3.10 -m venv .venv
 
 # Activate virtual environment
-source venv/bin/activate
+source .venv/bin/activate
 
 # Install requirements
 pip install -r requirements.txt
@@ -158,9 +170,17 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ## 🧪 Running Automated Tests
 
+Compass AI includes **51 automated tests across 18 test modules**, covering core decision engines, RAG retrieval, LLM fallback behavior, agent orchestration, datasets, and end-to-end workflows.
+
 Run pytest across all test modules:
 ```bash
 pytest -q
+```
+
+To measure code coverage (92% measured code coverage across core modules):
+```bash
+coverage run -m pytest
+coverage report
 ```
 
 ---

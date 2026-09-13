@@ -108,6 +108,7 @@ def filter_and_rank_resources(
             matched_prefs.append("Exact Skill Match")
         else:
             skill_score = 0.7
+            matched_prefs.append("Related Skill Match")
 
         if doc.level.strip().lower() == required_level.strip().lower():
             skill_score += 0.2

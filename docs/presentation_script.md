@@ -35,6 +35,6 @@
 ---
 
 ### Slide 5: Key Technical Accomplishments & Conclusion
-- 100% test coverage across 13 test suites (`tests/test_*.py` and `tests/test_e2e.py`).
-- Zero hallucination guarantee through verified resource dataset indexing.
+- 51 automated tests across 18 test modules (92% measured code coverage across core decision engines, RAG, and fallbacks).
+- Grounded resource recommendations strictly selected from curated, verified resource dataset indexing.
 - Fully operational Streamlit web interface (`app.py`).
