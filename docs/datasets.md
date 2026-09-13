@@ -47,5 +47,5 @@ Defines actionable learning outcomes and default study hours for each skill.
 ---
 
 ## 3. Grounded Resource Indexing & Data Governance
-1. **Source Verification**: All resources are verified from top educational platforms (FreeCodeCamp, Udacity, Coursera, Mode Analytics, PostgreSQL Docs). Resource titles, providers, and URLs are selected exclusively from this curated dataset.
+1. **Source Verification**: Resources are curated from established educational platforms, documentation sites, and recognized educators. Resource titles, providers, and URLs are selected exclusively from this curated dataset.
 2. **Schema Enforcement**: Pydantic models automatically validate incoming datasets during application startup.
