@@ -5,7 +5,7 @@
 ### Slide 1: Introduction & SDG 4 Impact
 - **Greeting**: "Good morning everyone. I am presenting **Compass AI**, a personalized learning path and skill-gap optimization platform created for my 1M1B Virtual Internship *AI for Sustainability*."
 - **Tagline**: *"Too much information. Too many paths. One clear direction."*
-- **UN SDG 4 Alignment**: "Our project directly aligns with UN Sustainable Development Goal 4 (Quality Education) by eliminating choice overload for students, offering 100% free learning resources, and regional language support (English & Hindi)."
+- **UN SDG 4 Alignment**: "Our project directly aligns with UN Sustainable Development Goal 4 (Quality Education) by eliminating choice overload for students, enabling free-resource filtering, and regional language support (English & Hindi)."
 
 ---
 
@@ -35,6 +35,6 @@
 ---
 
 ### Slide 5: Key Technical Accomplishments & Conclusion
-- 51 automated tests across 18 test modules (92% measured code coverage across core decision engines, RAG, and fallbacks).
+- 51 automated tests across 18 test modules covering core decision engines, RAG retrieval, LLM fallback behavior, agent orchestration, datasets, and end-to-end workflows.
 - Grounded resource recommendations strictly selected from curated, verified resource dataset indexing.
 - Fully operational Streamlit web interface (`app.py`).

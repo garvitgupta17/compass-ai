@@ -177,7 +177,7 @@ Run pytest across all test modules:
 pytest -q
 ```
 
-To measure code coverage (92% measured code coverage across core modules):
+To measure code coverage:
 ```bash
 coverage run -m pytest
 coverage report

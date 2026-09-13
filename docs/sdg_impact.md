@@ -15,7 +15,7 @@ The initiative directly addresses **UN Sustainable Development Goal 4: Quality E
 ### 🌍 Target 4.5: Equal Access & Inclusivity
 - **Problem**: High-quality tech mentorship is often locked behind expensive bootcamps and subscription paywalls.
 - **Compass AI Solution**:
-  - **Budget Accessibility**: Features strict hard-constraint filtering for **100% Free** learning resources.
+  - **Budget Accessibility**: Features strict hard-constraint filtering for free learning resources.
   - **Language Inclusivity**: Includes top-tier regional language support (such as **Hindi** courses) to empower diverse student communities.
 
 ### 💡 Transparency & AI Ethics
